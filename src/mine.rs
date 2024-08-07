@@ -50,7 +50,7 @@ impl Miner {
                 proof,
                 cutoff_time,
                 args.threads,
-                18u32,
+                16u32,
             )
             .await;
           
@@ -70,7 +70,7 @@ impl Miner {
             if best_difficulty < 18 {  
            // 如果best_difficulty小于18，则不执行后续操作，继续循环  
             println!("Difficulty too low ({}), continuing...", best_difficulty);  
-             continue; // 跳过循环的剩余部分  
+             //continue; // 跳过循环的剩余部分  
            }  
   
            // 如果best_difficulty >= 18，则执行后续操作  
@@ -193,10 +193,10 @@ impl Miner {
         let clock = get_clock(&self.rpc_client).await;
         proof
             .last_hash_at
-            .saturating_add(100)
+            .saturating_add(60)
             .saturating_sub(buffer_time as i64)
             .saturating_sub(clock.unix_timestamp)
-            .max(100) as u64
+            .max(30) as u64
     }
 }
 
