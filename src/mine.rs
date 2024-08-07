@@ -44,14 +44,21 @@ impl Miner {
 
             // Run drillx
             let config = get_config(&self.rpc_client).await;
-            let solution = Self::find_hash_par(
+           let (solution, best_difficulty) = Self::find_hash_par(
                 proof,
                 cutoff_time,
                 args.threads,
                 config.min_difficulty as u32,
             )
             .await;
-
+          if best_difficulty < 18 {  
+           // 如果best_difficulty小于18，则不执行后续操作，继续循环  
+            println!("Difficulty too low ({}), continuing...", best_difficulty);  
+             continue; // 跳过循环的剩余部分  
+           }  
+  
+           // 如果best_difficulty >= 18，则执行后续操作  
+           println!("Found solution with difficulty: {}", best_difficulty); 
             // Submit most difficult hash
             let mut compute_budget = 500_000;
             let mut ixs = vec![ore_api::instruction::auth(proof_pubkey(signer.pubkey()))];
@@ -76,7 +83,7 @@ impl Miner {
         cutoff_time: u64,
         threads: u64,
         min_difficulty: u32,
-    ) -> Solution {
+    ) -> (Solution, u32) {
         // Dispatch job to each thread
         let progress_bar = Arc::new(spinner::new_progress_bar());
         progress_bar.set_message("Mining...");
@@ -154,7 +161,7 @@ impl Miner {
             best_difficulty
         ));
 
-        Solution::new(best_hash.d, best_nonce.to_le_bytes())
+        (Solution::new(best_hash.d, best_nonce.to_le_bytes()), best_difficulty)  
     }
 
     pub fn check_num_cores(&self, threads: u64) {
@@ -183,10 +190,10 @@ impl Miner {
         let clock = get_clock(&self.rpc_client).await;
         proof
             .last_hash_at
-            .saturating_add(300)
+            .saturating_add(20)
             .saturating_sub(buffer_time as i64)
             .saturating_sub(clock.unix_timestamp)
-            .max(100) as u64
+            .max(20) as u64
     }
 }
 
