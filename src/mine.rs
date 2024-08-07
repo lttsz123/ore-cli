@@ -191,10 +191,10 @@ impl Miner {
         let clock = get_clock(&self.rpc_client).await;
         proof
             .last_hash_at
-            .saturating_add(20)
+            .saturating_add(100)
             .saturating_sub(buffer_time as i64)
             .saturating_sub(clock.unix_timestamp)
-            .max(20) as u64
+            .max(100) as u64
     }
 }
 
