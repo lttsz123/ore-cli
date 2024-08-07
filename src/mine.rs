@@ -44,7 +44,7 @@ impl Miner {
 
             // Run drillx
             let config = get_config(&self.rpc_client).await;
-            config.min_difficulty = 18;
+            config.min_difficulty = &18;
              println!("min difficulty ({}) ", config.min_difficulty);  
            let (solution, best_difficulty) = Self::find_hash_par(
                 proof,
