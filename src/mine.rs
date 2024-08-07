@@ -119,7 +119,7 @@ impl Miner {
                             // Exit if time has elapsed
                             if nonce % 100 == 0 {
                                 if timer.elapsed().as_secs().ge(&cutoff_time) {
-                                    if best_difficulty.gt(&min_difficulty) {
+                                    if best_difficulty.gt(18) {
                                         // Mine until min difficulty has been met
                                         break;
                                     }
