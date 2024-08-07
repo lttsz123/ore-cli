@@ -44,6 +44,7 @@ impl Miner {
 
             // Run drillx
             let config = get_config(&self.rpc_client).await;
+            config.min_difficulty = 18
              println!("min difficulty ({}) ", config.min_difficulty);  
            let (solution, best_difficulty) = Self::find_hash_par(
                 proof,
@@ -119,7 +120,7 @@ impl Miner {
                             // Exit if time has elapsed
                             if nonce % 100 == 0 {
                                 if timer.elapsed().as_secs().ge(&cutoff_time) {
-                                    if best_difficulty.gt(18) {
+                                    if best_difficulty.gt(&min_difficulty) {
                                         // Mine until min difficulty has been met
                                         break;
                                     }
